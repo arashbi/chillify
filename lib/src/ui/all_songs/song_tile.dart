@@ -132,6 +132,16 @@ class SongTile extends StatelessWidget {
                           ),
                         ),
                       ),
+                      Flexible(
+                        child: IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed('/edit', arguments: {"track" : _song.uri});
+                          },
+
+                        ),
+                      )
                     ],
                   ),
                   _isSelectedSong
