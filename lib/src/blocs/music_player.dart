@@ -39,6 +39,7 @@ class MusicPlayerBloc {
       (data) {
         _songs$.add(data);
       },
+
     );
   }
 

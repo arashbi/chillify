@@ -27,11 +27,19 @@ dependencies:
   permission_handler: 2.1.2
   shared_preferences: ^0.5.3+1
   dart_tags: ^0.2.0
+  inject:
+    git:
+      url: https://github.com/google/inject.dart.git
+      path: package/inject
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
+  inject_generator:
+    git:
+      url: https://github.com/google/inject.dart.git
+      path: package/inject_generator
+  build_runner:
+  mockito: ^4.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 

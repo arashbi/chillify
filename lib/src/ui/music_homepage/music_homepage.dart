@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:music_app/src/blocs/SpinnerBloc.dart';
 import 'package:music_app/src/blocs/global.dart';
+import 'package:music_app/src/blocs/music_player.dart';
 import 'package:music_app/src/ui/albums/albums_screen.dart';
 import 'package:music_app/src/ui/all_songs/all_songs_screen.dart';
 import 'package:music_app/src/ui/favorites/favorites_screen.dart';
@@ -13,12 +15,21 @@ import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class MusicHomepage extends StatefulWidget {
+  final SpinnerBloc _spinnerBloc;
+  final MusicPlayerBloc _musicPlayerBloc;
+  MusicHomepage(this._spinnerBloc, this._musicPlayerBloc);
   @override
-  _MusicHomepageState createState() => _MusicHomepageState();
+  _MusicHomepageState createState() => _MusicHomepageState(_spinnerBloc, _musicPlayerBloc);
 }
 
 class _MusicHomepageState extends State<MusicHomepage> {
   PanelController _panelController;
+  final double _radius = 25.0;
+  final SpinnerBloc _spinnerBloc;
+
+  final MusicPlayerBloc _musicPlayerBloc;
+
+  _MusicHomepageState(this._spinnerBloc, this._musicPlayerBloc);
 
   @override
   void initState() {
@@ -35,7 +46,20 @@ class _MusicHomepageState extends State<MusicHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    final double _radius = 25.0;
+    return StreamBuilder(
+      stream: _spinnerBloc.spinning,
+      initialData: false,
+      builder: (context, AsyncSnapshot<bool> spinnigSnapshot){
+        return spinnigSnapshot.data?
+
+            Center(
+              child: CircularProgressIndicator()
+            ):
+        _body(context);
+      },
+    );
+  }
+  Widget _body(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
         if (!_panelController.isPanelClosed()) {
@@ -153,7 +177,7 @@ class _MusicHomepageState extends State<MusicHomepage> {
                 key: UniqueKey(),
                 physics: BouncingScrollPhysics(),
                 children: <Widget>[
-                  AllSongsScreen(),
+                  AllSongsScreen(_musicPlayerBloc),
                   AlbumsScreen(),
                   FavoritesScreen(),
                 ],
@@ -164,7 +188,6 @@ class _MusicHomepageState extends State<MusicHomepage> {
       ),
     );
   }
-
   void _showExitDialog() {
     final GlobalBloc _globalBloc = Provider.of<GlobalBloc>(context);
     showDialog(

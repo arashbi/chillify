@@ -76,6 +76,7 @@ class FavoritesScreen extends StatelessWidget {
                       }
                     },
                     child: SongTile(
+                      null,
                       song: _songs[index],
                     ),
                   );

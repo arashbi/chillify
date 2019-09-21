@@ -1,3 +1,4 @@
+import 'package:inject/inject.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -7,6 +8,8 @@ class PermissionsBloc {
   BehaviorSubject<PermissionStatus> get storagePermissionStatus$ =>
       _storagePermissionStatus$;
 
+  @provide
+  @singleton
   PermissionsBloc() {
     _storagePermissionStatus$ = BehaviorSubject<PermissionStatus>();
     requestStoragePermission();

@@ -114,6 +114,7 @@ class SpecificAlbumScreen extends StatelessWidget {
                         }
                       },
                       child: SongTile(
+                        null,
                         song: _albumSongs[index],
                       ),
                     );

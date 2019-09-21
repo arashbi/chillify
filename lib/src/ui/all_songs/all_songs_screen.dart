@@ -2,23 +2,22 @@ import 'package:flute_music_player/flute_music_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:music_app/src/blocs/global.dart';
+import 'package:music_app/src/blocs/music_player.dart';
 import 'package:music_app/src/common/empty_screen.dart';
 import 'package:music_app/src/models/playerstate.dart';
 import 'package:music_app/src/ui/all_songs/song_tile.dart';
-import 'package:provider/provider.dart';
 
 class AllSongsScreen extends StatelessWidget {
-  AllSongsScreen({
+  final MusicPlayerBloc _musicPlayerBloc;
+  AllSongsScreen(this._musicPlayerBloc, {
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final GlobalBloc _globalBloc = Provider.of<GlobalBloc>(context);
     return Scaffold(
       body: StreamBuilder<List<Song>>(
-        stream: _globalBloc.musicPlayerBloc.songs$,
+        stream: _musicPlayerBloc.songs$,
         builder: (BuildContext context, AsyncSnapshot<List<Song>> snapshot) {
           if (!snapshot.hasData) {
             return Center(
@@ -39,7 +38,7 @@ class AllSongsScreen extends StatelessWidget {
             itemExtent: 110,
             itemBuilder: (BuildContext context, int index) {
               return StreamBuilder<MapEntry<PlayerState, Song>>(
-                stream: _globalBloc.musicPlayerBloc.playerState$,
+                stream: _musicPlayerBloc.playerState$,
                 builder: (BuildContext context,
                     AsyncSnapshot<MapEntry<PlayerState, Song>> snapshot) {
                   if (!snapshot.hasData) {
@@ -50,38 +49,39 @@ class AllSongsScreen extends StatelessWidget {
                   final bool _isSelectedSong = _currentSong == _songs[index];
                   return GestureDetector(
                     onTap: () {
-                      _globalBloc.musicPlayerBloc.updatePlaylist(_songs);
+                      _musicPlayerBloc.updatePlaylist(_songs);
                       switch (_state) {
                         case PlayerState.playing:
                           if (_isSelectedSong) {
-                            _globalBloc.musicPlayerBloc
+                            _musicPlayerBloc
                                 .pauseMusic(_currentSong);
                           } else {
-                            _globalBloc.musicPlayerBloc.stopMusic();
-                            _globalBloc.musicPlayerBloc.playMusic(
+                            _musicPlayerBloc.stopMusic();
+                            _musicPlayerBloc.playMusic(
                               _songs[index],
                             );
                           }
                           break;
                         case PlayerState.paused:
                           if (_isSelectedSong) {
-                            _globalBloc.musicPlayerBloc
+                            _musicPlayerBloc
                                 .playMusic(_songs[index]);
                           } else {
-                            _globalBloc.musicPlayerBloc.stopMusic();
-                            _globalBloc.musicPlayerBloc.playMusic(
+                            _musicPlayerBloc.stopMusic();
+                            _musicPlayerBloc.playMusic(
                               _songs[index],
                             );
                           }
                           break;
                         case PlayerState.stopped:
-                          _globalBloc.musicPlayerBloc.playMusic(_songs[index]);
+                          _musicPlayerBloc.playMusic(_songs[index]);
                           break;
                         default:
                           break;
                       }
                     },
                     child: SongTile(
+                      this._musicPlayerBloc,
                       song: _songs[index],
                     ),
                   );

@@ -154,6 +154,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         }
                       },
                       child: SongTile(
+                        null,
                         song: _filteredSongs[index],
                       ),
                     );

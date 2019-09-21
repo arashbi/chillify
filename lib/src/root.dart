@@ -1,26 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:inject/inject.dart';
+import 'package:music_app/src/blocs/SpinnerBloc.dart';
 import 'package:music_app/src/blocs/global.dart';
+import 'package:music_app/src/blocs/music_editor.dart';
+import 'package:music_app/src/blocs/music_player.dart';
+import 'package:music_app/src/blocs/permissions.dart';
 import 'package:music_app/src/ui/edit/edit.dart';
 import 'package:music_app/src/ui/music_homepage/home.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-class ChillifyApp extends StatelessWidget {
-  final GlobalBloc _globalBloc = GlobalBloc();
-   Map<String,Widget>_routes;
-  ChillifyApp() {
-    _routes = {
+class MusicCleaner extends StatelessWidget {
+  final GlobalBloc _globalBloc;
+  final MusicEditorBloc _musicEditorBloc;
+  final MusicPlayerBloc _musicPlayerBloc;
+  final PermissionsBloc _permissionsBloc;
+  final SpinnerBloc _spinnerBloc;
+
+   final Map<String,Widget>_routes = {};
+  @provide
+  MusicCleaner(this._globalBloc,
+      this._spinnerBloc,
+      this._musicEditorBloc,
+      this._musicPlayerBloc,
+      this._permissionsBloc) {
+    _routes.addAll( {
       "edit" : BottomAppBar()
-    };
+    });
   }
   Route _getRoute(RouteSettings settings) {
     switch (settings.name) {
       case "/":
-        return FadeRoute(page: Home());
+        return FadeRoute(page: Home(_spinnerBloc, _musicPlayerBloc));
 
       case '/edit':
-        this._globalBloc.musicEditorBloc.load((settings.arguments as Map)["track"]);
-        return FadeRoute(page: EditTrackScreen());
+        this._musicEditorBloc.load((settings.arguments as Map)["track"]);
+        return FadeRoute(page: EditTrackScreen(_musicEditorBloc));
 
 
       default:
@@ -31,7 +46,7 @@ class ChillifyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Provider<GlobalBloc>(
       builder: (BuildContext context) {
-        _globalBloc.permissionsBloc.storagePermissionStatus$.listen(
+        _permissionsBloc.storagePermissionStatus$.listen(
           (data) {
             if (data == PermissionStatus.granted) {
               _globalBloc.musicPlayerBloc.fetchSongs().then(
@@ -52,7 +67,7 @@ class ChillifyApp extends StatelessWidget {
             trackHeight: 1,
           ),
           buttonTheme: ButtonThemeData(
-            colorScheme: ColorScheme.dark(),
+            colorScheme: ColorScheme.light(),
           )
         ),
 

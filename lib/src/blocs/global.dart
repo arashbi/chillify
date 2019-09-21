@@ -11,11 +11,7 @@ class GlobalBloc {
   PermissionsBloc get permissionsBloc => _permissionsBloc;
   MusicEditorBloc get musicEditorBloc => _musicEditorBloc;
 
-  GlobalBloc() {
-    _musicPlayerBloc = MusicPlayerBloc();
-    _musicEditorBloc = MusicEditorBloc();
-    _permissionsBloc = PermissionsBloc();
-  }
+  GlobalBloc(this._musicPlayerBloc, this._permissionsBloc);
 
   void dispose() {
     _musicPlayerBloc.dispose();

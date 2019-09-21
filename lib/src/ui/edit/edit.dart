@@ -1,25 +1,23 @@
 import 'package:flute_music_player/flute_music_player.dart';
 import 'package:flutter/material.dart';
-import 'package:music_app/src/blocs/global.dart';
 import 'package:music_app/src/blocs/music_editor.dart';
 import 'package:music_app/src/ui/now_playing/empty_album_art.dart';
-import 'package:provider/provider.dart';
 
 class EditTrackScreen extends StatelessWidget {
-  EditTrackScreen();
+  final MusicEditorBloc _musicEditorBloc;
+  EditTrackScreen(this._musicEditorBloc);
   TextEditingController _titleController = TextEditingController();
   TextEditingController _artistController = TextEditingController();
   TextEditingController _genreController = TextEditingController();
   TextEditingController _albumController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final GlobalBloc _globalBloc = Provider.of<GlobalBloc>(context);
     final double _radius = 25.0;
     final double _screenHeight = MediaQuery.of(context).size.height;
     final double _albumArtSize = _screenHeight / 3;
     return Scaffold(
         body: StreamBuilder<TrackModel>(
-            stream: _globalBloc.musicEditorBloc.trackModel$,
+            stream: _musicEditorBloc.trackModel$,
             builder:
                 (BuildContext context, AsyncSnapshot<TrackModel> snapshot) {
               if (!snapshot.hasData) {
@@ -70,7 +68,8 @@ class EditTrackScreen extends StatelessWidget {
                                 model.title = _titleController.text;
                                 model.genre = _genreController.text;
                                 model.artist = _artistController.text;
-                                _globalBloc.musicEditorBloc.save(model);
+                                _musicEditorBloc.save(model);
+                                Navigator.of(context).pop();
 
                               },
                             ),
@@ -80,7 +79,7 @@ class EditTrackScreen extends StatelessWidget {
                                   .buttonTheme
                                   .colorScheme
                                   .background,
-                              onPressed: () => print("Cancel"),
+                              onPressed: () =>Navigator.of(context).pop()
                             )
                           ],
                         )

@@ -1,25 +1,24 @@
 import 'package:flute_music_player/flute_music_player.dart';
 import 'package:flutter/material.dart';
-import 'package:music_app/src/blocs/global.dart';
+import 'package:music_app/src/blocs/music_player.dart';
 import 'package:music_app/src/common/music_icons.dart';
 import 'package:music_app/src/models/playerstate.dart';
-import 'package:provider/provider.dart';
 
 class SongTile extends StatelessWidget {
+  final MusicPlayerBloc _musicPlayerBloc;
   final Song _song;
   String _artists;
   String _duration;
-  SongTile({Key key, @required Song song})
+  SongTile(this._musicPlayerBloc,{Key key, @required Song song})
       : _song = song,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final GlobalBloc _globalBloc = Provider.of<GlobalBloc>(context);
     parseArtists();
     parseDuration();
     return StreamBuilder<MapEntry<PlayerState, Song>>(
-        stream: _globalBloc.musicPlayerBloc.playerState$,
+        stream: _musicPlayerBloc.playerState$,
         builder: (BuildContext context,
             AsyncSnapshot<MapEntry<PlayerState, Song>> snapshot) {
           if (!snapshot.hasData) {
@@ -156,7 +155,7 @@ class SongTile extends StatelessWidget {
                             Flexible(
                               flex: 14,
                               child: StreamBuilder<Duration>(
-                                stream: _globalBloc.musicPlayerBloc.position$,
+                                stream: _musicPlayerBloc.position$,
                                 builder: (BuildContext context,
                                     AsyncSnapshot<Duration> snapshot) {
                                   if (!snapshot.hasData) {
@@ -181,20 +180,19 @@ class SongTile extends StatelessWidget {
                                         ? _millseconds.toDouble()
                                         : _songDurationInMilliseconds
                                             .toDouble(),
-                                    onChangeStart: (double value) => _globalBloc
-                                        .musicPlayerBloc
+                                    onChangeStart: (double value) => _musicPlayerBloc
                                         .invertSeekingState(),
                                     onChanged: (double value) {
                                       final Duration _duration = Duration(
                                         milliseconds: value.toInt(),
                                       );
-                                      _globalBloc.musicPlayerBloc
+                                      _musicPlayerBloc
                                           .updatePosition(_duration);
                                     },
                                     onChangeEnd: (double value) {
-                                      _globalBloc.musicPlayerBloc
+                                      _musicPlayerBloc
                                           .invertSeekingState();
-                                      _globalBloc.musicPlayerBloc
+                                      _musicPlayerBloc
                                           .audioSeek(value / 1000);
                                     },
                                     activeColor: Colors.blue,

@@ -1,18 +1,33 @@
 
 import 'dart:core';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:dart_tags/dart_tags.dart';
+import 'package:inject/inject.dart';
+import 'package:music_app/src/blocs/SpinnerBloc.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'music_player.dart';
 
 class MusicEditorBloc {
   BehaviorSubject<TrackModel> _trackModel$ = BehaviorSubject();
 
+  final SpinnerBloc _spinnerBloc;
+
+  final MusicPlayerBloc _musicPlayerBloc;
+
   BehaviorSubject<TrackModel> get trackModel$ => _trackModel$;
 
+  @provide
+  @singleton
+  MusicEditorBloc(this._spinnerBloc, this._musicPlayerBloc);
+
   void save(TrackModel model) {
+    _spinnerBloc.addWorker();
     print("Saving track model");
-    _saveModel(model);
+    _saveModel(model)
+        .then((void v) => this._musicPlayerBloc.fetchSongs()).then(_spinnerBloc.done());
   }
 
   void load(String track){
@@ -40,12 +55,12 @@ class MusicEditorBloc {
      return m;
   }
 
-  _saveModel(TrackModel model) {
+  Future<Void>_saveModel(TrackModel model) {
     var file = File(model.uri);
 
     TagProcessor tp = TagProcessor();
     var bytes = file.readAsBytes();
-    var m  = tp.getTagsFromByteArray(bytes,[TagType.id3v2]).then((tags) {
+    return tp.getTagsFromByteArray(bytes,[TagType.id3v2]).then((tags) {
       tags[0].tags = model.asMap();
       return tags;
     }).then((tag) {
@@ -55,6 +70,7 @@ class MusicEditorBloc {
     }).then((File file){
       print('file written');
       print(file.path);
+      return;
     });
   }
 }
