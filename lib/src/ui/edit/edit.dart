@@ -29,68 +29,71 @@ class EditTrackScreen extends StatelessWidget {
               }
 
               final model = snapshot.data;
-              return Form(
-                child: CustomScrollView(
-
-                    slivers: [
-                  SliverAppBar(
-                    pinned: true,
-                    expandedHeight: 250.0,
-                    flexibleSpace: FlexibleSpaceBar(
-                      title: Text(model.title),
-                    ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildListDelegate(
-                      <Widget>[
-                        FieldInput(label: "Title", value: model.title,
-                          controller: _titleController,),
-                        FieldInput(
-                          label: "Artist",
-                          value: model.artist,
-                          controller: _artistController,
-                        ),
-                        FieldInput(
-                            label: "Album",
-                            controller:  _albumController,
-                            value: model.album),
-                        FieldInput(
-                          label: "Genre",
-                          value: model.genre,
-                          controller: _genreController,
-                        ),
-                        ButtonBar(
-                          children: <Widget>[
-                            RaisedButton(
-                              child: Text("Save"),
-                              onPressed: () {
-                                model.album = _albumController.text;
-                                model.title = _titleController.text;
-                                model.genre = _genreController.text;
-                                model.artist = _artistController.text;
-                                _musicEditorBloc.save(model);
-                                Navigator.of(context).pop();
-
-                              },
-                            ),
-                            RaisedButton(
-                              child: Text("Cancel"),
-                              color: Theme.of(context)
-                                  .buttonTheme
-                                  .colorScheme
-                                  .background,
-                              onPressed: () =>Navigator.of(context).pop()
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ]),
-              );
+              return editForm(context, model);
             }));
   }
 
+  Widget editForm(BuildContext context, TrackModel model) {
+   return Form(
+      child: CustomScrollView(
+
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 250.0,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(model.title),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                <Widget>[
+                  FieldInput(label: "Title", value: model.title,
+                    controller: _titleController,),
+                  FieldInput(
+                    label: "Artist",
+                    value: model.artist,
+                    controller: _artistController,
+                  ),
+                  FieldInput(
+                      label: "Album",
+                      controller:  _albumController,
+                      value: model.album),
+                  FieldInput(
+                    label: "Genre",
+                    value: model.genre,
+                    controller: _genreController,
+                  ),
+                  ButtonBar(
+                    children: <Widget>[
+                      RaisedButton(
+                        child: Text("Save"),
+                        onPressed: () {
+                          model.album = _albumController.text;
+                          model.title = _titleController.text;
+                          model.genre = _genreController.text;
+                          model.artist = _artistController.text;
+                          _musicEditorBloc.save(model);
+                          Navigator.of(context).pop();
+
+                        },
+                      ),
+                      RaisedButton(
+                          child: Text("Cancel"),
+                          color: Theme.of(context)
+                              .buttonTheme
+                              .colorScheme
+                              .background,
+                          onPressed: () =>Navigator.of(context).pop()
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ]),
+    );
+  }
   String getDuration(Song _song) {
     final double _temp = _song.duration / 1000;
     final int _minutes = (_temp / 60).floor();

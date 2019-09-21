@@ -132,6 +132,7 @@ class SongTile extends StatelessWidget {
                         ),
                       ),
                       Flexible(
+                        flex: 2,
                         child: IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {
