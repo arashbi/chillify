@@ -32,7 +32,6 @@ class MusicEditorBloc {
 
   void load(String track){
     _spinnerBloc.addWorker();
-    trackModel$.add(TrackModel());
     Future<TrackModel> model = _loadModel(track);
     model.then( (m) {
       m.uri = track;

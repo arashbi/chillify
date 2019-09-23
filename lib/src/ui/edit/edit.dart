@@ -6,10 +6,10 @@ import 'package:music_app/src/ui/now_playing/empty_album_art.dart';
 class EditTrackScreen extends StatelessWidget {
   final MusicEditorBloc _musicEditorBloc;
   EditTrackScreen(this._musicEditorBloc);
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _artistController = TextEditingController();
-  TextEditingController _genreController = TextEditingController();
-  TextEditingController _albumController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _artistController = TextEditingController();
+  final TextEditingController _genreController = TextEditingController();
+  final TextEditingController _albumController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final double _radius = 25.0;
@@ -20,16 +20,16 @@ class EditTrackScreen extends StatelessWidget {
             stream: _musicEditorBloc.trackModel$,
             builder:
                 (BuildContext context, AsyncSnapshot<TrackModel> snapshot) {
-              if (!snapshot.hasData) {
+              if (!snapshot.hasData || snapshot.data == null) {
                 return EmptyAlbumArtContainer(
                   radius: _radius,
                   albumArtSize: _albumArtSize,
                   iconSize: _albumArtSize / 2,
                 );
+              } else {
+                final model = snapshot.data;
+                return editForm(context, model);
               }
-
-              final model = snapshot.data;
-              return editForm(context, model);
             }));
   }
 
@@ -42,13 +42,13 @@ class EditTrackScreen extends StatelessWidget {
               pinned: true,
               expandedHeight: 250.0,
               flexibleSpace: FlexibleSpaceBar(
-                title: Text(model.title),
+                title: Text(model.title == null ? " No Title": model.title),
               ),
             ),
             SliverList(
               delegate: SliverChildListDelegate(
                 <Widget>[
-                  FieldInput(label: "Title", value: model.title,
+                  FieldInput(label: "Title", value: model.title, autofocus: true,
                     controller: _titleController,),
                   FieldInput(
                     label: "Artist",
@@ -107,25 +107,30 @@ class EditTrackScreen extends StatelessWidget {
 }
 
 class FieldInput extends StatelessWidget {
-  const FieldInput({Key key, @required this.label, @required this.value, this.controller})
-      : super(key: key);
+
+
   final String label;
   final String value;
   final TextEditingController controller;
+  final bool autofocus;
+
+  const FieldInput({Key key, @required this.label, @required this.value, @required this.controller,this.autofocus = false})
+      : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
-    controller.text = value;
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-            labelText: label,
-            border: OutlineInputBorder(borderSide: BorderSide())),
 
-      ),
-    );
+    return  Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+              labelText: label,
+              border: OutlineInputBorder(borderSide: BorderSide())),
+
+        ),
+      );
   }
 }
 
